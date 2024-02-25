@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESP-RS JSON Post Handler</title>
+<style type="text/css">
+body {
+	max-width: 50em;
+	margin: auto;
+	padding: 1em;
+	font: 1em/1.65 sans-serif;
+}
+input {
+    width: 100%;
+    height: 3em;
+    margin-bottom: 1em;
+}
+</style>
+</head>
+<body>
+<form id="the-form" action="/post" method="post" accept-charset="utf-8">
+<!-- This is a form to get the user command to run and also select what to show -->
+<label for="command-to-run">Command to run:</label>
+<input type="text" id="command-to-run" name="command_to_run"><br>
+<label for="show-temperature">Show Temperature:</label>
+<input type="checkbox" id="show-temperature" name="show_temperature"><br>
+<label for="connection-type">Connection Type:</label>
+<select id="connection-type" name="connection_type">
+  <option value="bluetooth">Bluetooth</option>
+  <option value="wifi">Wi-Fi</option>
+</select><br>
+
+<input type="submit" value="Submit">
+</form>
+<p id="server-resp"></p>
+<script type="text/javascript">
+
+let theForm = document.getElementById("the-form");
+let serverResp = document.getElementById("server-resp");
+
+theForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let form = e.currentTarget;
+    let url = form.action;
+
+    try {
+        let entries = Object.fromEntries(new FormData(form).entries());
+        let resp = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify(entries),
+        });
+        serverResp.innerText = await resp.text();
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+</script>
+</body>
+</html>
